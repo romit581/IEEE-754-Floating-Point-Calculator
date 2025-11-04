@@ -80,7 +80,8 @@ IEEE754Calculator/
 ### 📸 Preview
 
 ```
-<img width="1919" height="977" alt="Screenshot 2025-11-04 225902" src="https://github.com/user-attachments/assets/3750d3ed-81cf-4a6f-9a45-d37e61ac5064" />
+<img width="1919" height="977" alt="Screenshot 2025-11-04 225902" src="https://github.com/user-attachments/assets/9ecdfad4-37ec-4494-9a53-581c537e9414" />
+
 ```
 
 ---
