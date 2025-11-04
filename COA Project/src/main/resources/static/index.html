@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEEE 754 Floating Point Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: -2;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            right: 15%;
+            top: 60%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            left: 70%;
+            top: 30%;
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            left: 30%;
+            bottom: 20%;
+            animation-delay: 6s;
+        }
+
+        .shape:nth-child(5) {
+            width: 90px;
+            height: 90px;
+            right: 30%;
+            top: 10%;
+            animation-delay: 8s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-30px) rotate(180deg);
+                opacity: 0.6;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .format-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .format-btn {
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .format-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .format-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+
+        .bit-representation {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            word-break: break-all;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .bit-group {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 2px;
+            border-radius: 4px;
+        }
+
+        .sign { background: #ffebee; color: #c62828; }
+        .exponent { background: #e3f2fd; color: #1565c0; }
+        .mantissa { background: #e8f5e9; color: #2e7d32; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <h1>IEEE 754 Calculator</h1>
+        <p class="subtitle">Convert decimal numbers to IEEE 754 floating-point representation</p>
+
+        <div class="format-selector">
+            <button class="format-btn active" onclick="setFormat(32)">Single Precision (32-bit)</button>
+            <button class="format-btn" onclick="setFormat(64)">Double Precision (64-bit)</button>
+        </div>
+
+        <div class="input-section">
+            <label for="decimalInput">Enter Decimal Number:</label>
+            <input type="number" id="decimalInput" placeholder="e.g., 3.14159" step="any" oninput="convert()">
+        </div>
+
+        <div class="result-section" id="results" style="display: none;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">Binary Representation:</h3>
+            <div class="bit-representation" id="binaryOutput"></div>
+            
+            <h3 style="color: #667eea; margin-top: 20px; margin-bottom: 15px;">Breakdown:</h3>
+            <div id="breakdown"></div>
+            
+            <h3 style="color: #667eea; margin-top: 20px; margin-bottom: 15px;">Hexadecimal:</h3>
+            <div class="bit-representation" id="hexOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentFormat = 32;
+
+        function setFormat(bits) {
+            currentFormat = bits;
+            document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            convert();
+        }
+
+        function convert() {
+            const input = parseFloat(document.getElementById('decimalInput').value);
+            if (isNaN(input)) {
+                document.getElementById('results').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('results').style.display = 'block';
+
+            if (currentFormat === 32) {
+                convertFloat32(input);
+            } else {
+                convertFloat64(input);
+            }
+        }
+
+        function convertFloat32(num) {
+            const buffer = new ArrayBuffer(4);
+            const view = new DataView(buffer);
+            view.setFloat32(0, num);
+            const bits = view.getUint32(0);
+            
+            const sign = (bits >>> 31) & 1;
+            const exponent = (bits >>> 23) & 0xFF;
+            const mantissa = bits & 0x7FFFFF;
+
+            displayResults(sign, exponent, mantissa, 8, 23, bits);
+        }
+
+        function convertFloat64(num) {
+            const buffer = new ArrayBuffer(8);
+            const view = new DataView(buffer);
+            view.setFloat64(0, num);
+            
+            const high = view.getUint32(0);
+            const low = view.getUint32(4);
+            
+            const sign = (high >>> 31) & 1;
+            const exponent = (high >>> 20) & 0x7FF;
+            const mantissaHigh = high & 0xFFFFF;
+            const mantissaLow = low;
+
+            displayResults64(sign, exponent, mantissaHigh, mantissaLow);
+        }
+
+        function displayResults(sign, exponent, mantissa, expBits, mantBits, fullBits) {
+            const signBit = sign.toString(2);
+            const expBits_str = exponent.toString(2).padStart(expBits, '0');
+            const mantBits_str = mantissa.toString(2).padStart(mantBits, '0');
+
+            document.getElementById('binaryOutput').innerHTML = 
+                `<span class="bit-group sign">${signBit}</span>` +
+                `<span class="bit-group exponent">${expBits_str}</span>` +
+                `<span class="bit-group mantissa">${mantBits_str}</span>`;
+
+            const bias = (1 << (expBits - 1)) - 1;
+            const actualExp = exponent - bias;
+
+            document.getElementById('breakdown').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Sign:</span>
+                    <span class="info-value">${sign} (${sign ? 'Negative' : 'Positive'})</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Exponent:</span>
+                    <span class="info-value">${exponent} (Actual: ${actualExp})</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Mantissa:</span>
+                    <span class="info-value">${mantissa}</span>
+                </div>
+            `;
+
+            const hex = fullBits.toString(16).toUpperCase().padStart(8, '0');
+            document.getElementById('hexOutput').textContent = '0x' + hex;
+        }
+
+        function displayResults64(sign, exponent, mantissaHigh, mantissaLow) {
+            const signBit = sign.toString(2);
+            const expBits_str = exponent.toString(2).padStart(11, '0');
+            const mantHighBits = mantissaHigh.toString(2).padStart(20, '0');
+            const mantLowBits = mantissaLow.toString(2).padStart(32, '0');
+
+            document.getElementById('binaryOutput').innerHTML = 
+                `<span class="bit-group sign">${signBit}</span>` +
+                `<span class="bit-group exponent">${expBits_str}</span>` +
+                `<span class="bit-group mantissa">${mantHighBits}${mantLowBits}</span>`;
+
+            const bias = 1023;
+            const actualExp = exponent - bias;
+
+            document.getElementById('breakdown').innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Sign:</span>
+                    <span class="info-value">${sign} (${sign ? 'Negative' : 'Positive'})</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Exponent:</span>
+                    <span class="info-value">${exponent} (Actual: ${actualExp})</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Mantissa:</span>
+                    <span class="info-value">${mantissaHigh.toString(16).toUpperCase()}${mantissaLow.toString(16).padStart(8, '0').toUpperCase()}</span>
+                </div>
+            `;
+
+            const hexHigh = mantissaHigh.toString(16).toUpperCase().padStart(5, '0');
+            const hexLow = mantissaLow.toString(16).toUpperCase().padStart(8, '0');
+            const signExpHex = ((sign << 11) | exponent).toString(16).toUpperCase().padStart(3, '0');
+            document.getElementById('hexOutput').textContent = '0x' + signExpHex + hexHigh + hexLow;
+        }
+    </script>
+</body>
+</html>
